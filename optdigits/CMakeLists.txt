@@ -6,6 +6,6 @@ find_package(fann REQUIRED)
 include_directories( "${FANN_BASE}/include" )
 link_directories( "${FANN_BASE}/lib" )
 
-add_executable(optdigits file_callback.c file_callback.h optdigits.c)
+add_executable(optdigits optdigits.c)
 target_link_libraries(optdigits fann)
 
