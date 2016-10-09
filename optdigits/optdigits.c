@@ -108,12 +108,15 @@ int main(int argc, char *argv[])
 		int test_value =
 		    probability_output_to_int(test_data->output[i], num_output);
 		if (calc_value != test_value) {
+			if (missed_tests){
+				printf(",");
+			}
 			missed_tests++;
-			printf("NN calculated %d, should be %d\n", calc_value,
+			printf("#%d %d!=%d",i, calc_value,
 			       test_value);
 		}
 	}
-	printf("NN miscalculated %d of %d values in test set (%f %% error)\n",
+	printf("\nNN miscalculated %d of %d values in test set (%f %% error)\n",
 	       missed_tests, fann_length_train_data(test_data),
 	       (float)missed_tests / fann_length_train_data(test_data) * 100);
 
