@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 	const unsigned int num_input = 64;
 	const unsigned int num_output = 10;
 	const unsigned int num_layers = 3;
-	const unsigned int num_neurons_hidden = 37;
+	const unsigned int num_neurons_hidden = (num_input + num_output) / 2;
 	const float desired_error = 0.00001f;
 	//const unsigned int max_epochs = 5000000;
 	const unsigned int num_threads = 8;
