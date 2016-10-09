@@ -12,11 +12,13 @@ static int probability_output_to_int(fann_type * output, int num_output)
 	int val = 0;
 	unsigned int i;
 	for (i = 0; i < num_output; i++) {
+		//printf("%d=%f ", i, output[i]);
 		if (output[i] > probability) {
 			val = i;
 			probability = output[i];
 		}
 	}
+	//printf("\n");
 	return val;
 }
 
@@ -43,7 +45,7 @@ data_callback(unsigned int num_total, unsigned int num_input,
 	strval = strtok(NULL, delim);
 	val = strtol(strval, NULL, 0);
 	memset(outputs, 0, sizeof(*outputs));
-	outputs[val] = 1;
+	outputs[val] = 1.0f;
 }
 
 int main(int argc, char *argv[])
@@ -51,9 +53,9 @@ int main(int argc, char *argv[])
 	const unsigned int num_input = 64;
 	const unsigned int num_output = 10;
 	const unsigned int num_layers = 3;
-	const unsigned int num_neurons_hidden = 25;
-	const float desired_error = (const float)0.00001;
-	const unsigned int max_epochs = 50000;
+	const unsigned int num_neurons_hidden = 37;
+	const float desired_error = 0.00001f;
+	//const unsigned int max_epochs = 5000000;
 	const unsigned int num_threads = 8;
 	unsigned int i;
 	unsigned int missed_tests;
@@ -63,6 +65,11 @@ int main(int argc, char *argv[])
 	struct fann *ann =
 	    fann_create_standard(num_layers, num_input, num_neurons_hidden,
 				 num_output);
+	//fann_set_learning_rate(ann, 0.3);
+	fann_set_training_algorithm(ann, FANN_TRAIN_RPROP);
+	//fann_set_training_algorithm(ann, FANN_TRAIN_INCREMENTAL);
+	fann_set_activation_steepness_hidden(ann, 0.05);
+	fann_set_activation_steepness_output(ann, 0.05);
 	fann_print_connections(ann);
 	fann_set_activation_function_hidden(ann, FANN_ELLIOT);
 	fann_set_activation_function_output(ann, FANN_ELLIOT);
@@ -73,8 +80,9 @@ int main(int argc, char *argv[])
 					    data_callback);
 	fclose(datafile);
 
-	fann_print_parameters(ann);
-	for (i = 1; i <= max_epochs && error > desired_error; i++) {
+	//fann_print_parameters(ann);
+	// i <= max_epochs
+	for (i = 1; error > desired_error; i++) {
 		error =
 		    fann_train_epoch_irpropm_parallel(ann, train_data,
 						      num_threads);
