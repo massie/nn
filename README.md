@@ -7,7 +7,7 @@ From the [UC Irvine Machine Learning Repository](http://archive.ics.uci.edu/ml/i
 * [Breast Cancer Wisconsin (Diagnostic)](breast_cancer/README.md)
 * [Optical Recognition of Handwritten Digits](optdigits/README.md)
 
-# Installing FANN
+## Installing FANN
 
 The [Fast Neural Artificial Network Library (FANN)](http://leenissen.dk/fann/wp/) "is a free open source neural network library, which implements multilayer artificial neural networks in C with support for both fully connected and sparsely connected networks."
 
