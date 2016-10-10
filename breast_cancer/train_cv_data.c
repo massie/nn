@@ -1,4 +1,3 @@
-#include <float.h>
 #include "fann.h"
 #include "parallel_fann.h"
 #include "data_format.h"
@@ -12,9 +11,6 @@ int main(int argc, char *argv[])
 	const unsigned int num_neurons_hidden = (num_input + num_output) / 2;
 	const float desired_error = 0.01f;
 	const unsigned int max_epochs = 10000;
-	const unsigned int num_threads = 8;
-	unsigned int i;
-	float error = FLT_MAX;
 
 	struct fann *ann =
 	    fann_create_standard(num_layers, num_input, num_neurons_hidden,
