@@ -21,7 +21,3 @@ This program will train the NN using the training set, and then use the trained 
 After running, look at `breast-cancer.net` to see the NN that was trained.
 
 Note: You'll need to modify the `CMakeLists.txt` file, if you install FANN somewhere other than `/usr/local`.
-
-
-
-[Dataset used](https://archive.ics.uci.edu/ml/datasets/Optical+Recognition+of+Handwritten+Digits)
