@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
 	const unsigned int num_output = 1;
 	const unsigned int num_layers = 3;
 	const unsigned int num_neurons_hidden = (num_input + num_output) / 2;
-	const float desired_error = 0.00001f;
+	const float desired_error = 0.001f;
 	const unsigned int max_epochs = 100000;
 	const unsigned int num_threads = 8;
 	unsigned int i;
@@ -17,7 +17,6 @@ int main(int argc, char *argv[])
 	    false_positives;
 	float precision, recall;
 	float error = FLT_MAX;
-	fann_type *calc_value;
 
 	struct fann *ann =
 	    fann_create_standard(num_layers, num_input, num_neurons_hidden,
@@ -25,8 +24,8 @@ int main(int argc, char *argv[])
 	//fann_set_learning_rate(ann, 0.3);
 	fann_set_training_algorithm(ann, FANN_TRAIN_RPROP);
 	//fann_set_training_algorithm(ann, FANN_TRAIN_BATCH);
-	//fann_set_activation_steepness_hidden(ann, 0.25);
-	//fann_set_activation_steepness_output(ann, 0.25);
+	fann_set_activation_steepness_hidden(ann, 0.2);
+	fann_set_activation_steepness_output(ann, 0.2);
 	fann_print_connections(ann);
 	fann_set_activation_function_hidden(ann, FANN_ELLIOT);
 	fann_set_activation_function_output(ann, FANN_ELLIOT);
@@ -35,6 +34,7 @@ int main(int argc, char *argv[])
 	struct fann_train_data *train_data =
 	    fann_create_train_from_callback(419, num_input, num_output,
 					    data_callback);
+	//fann_init_weights(ann, train_data);
 	fclose(datafile);
 
 	//fann_print_parameters(ann);
@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
 	for (i = 0; i != fann_length_train_data(cv_data); i++) {
 		int cv_value = cv_data->output[i][0];
 		float cancer_probability = fann_run(ann, cv_data->input[i])[0];
-		int calc_value = cancer_probability < 0.5 ? 0 : 1;
+		int calc_value = cancer_probability >= 0.5 ? 1 : 0;
 		if (calc_value) {
 			if (cv_value) {
 				true_positives++;
