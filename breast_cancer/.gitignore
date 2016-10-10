@@ -4,4 +4,5 @@ Makefile
 cmake_install.cmake
 *.swp
 *.net
-breast_cancer
+train_cv_data
+test_data
