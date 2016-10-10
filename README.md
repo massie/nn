@@ -38,4 +38,3 @@ This tells cmake to use your specific gcc compiler. You should see output the in
 -- Performing Test OpenMP_FLAG_DETECTED - Success
 ```
 
-If you don't see the `OpenMP_FLAG_DETECTED - Success`, then you're `gcc` compiler doesn't have `openmp` support.
