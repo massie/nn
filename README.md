@@ -4,6 +4,7 @@ This is a repo for experimenting with neural networks.
 
 From the [UC Irvine Machine Learning Repository](http://archive.ics.uci.edu/ml/index.html):
 
+* [Molecular Biology (Splice-junction Gene Sequences](splice/README.md)
 * [Breast Cancer Wisconsin (Diagnostic)](breast_cancer/README.md)
 * [Optical Recognition of Handwritten Digits](optdigits/README.md)
 
