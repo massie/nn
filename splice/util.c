@@ -7,16 +7,55 @@
 // This global is unfortunate and necessary since it can't be passed to the callback */
 FILE *datafile = NULL;
 
-const char *slice_class_str[3] = { "N", "IE", "EI" };
+const char *slice_class_strings[3] = { "N", "IE", "EI" };
+const char *stop_codon_strings[3] = { "TAA", "TAG", "TGA" };
+
+#define num_strings(x) (sizeof(x)/sizeof(x[0]))
 
 static const char *nucleotides = "ACTGDNSR";
+
+int intron_exon_feature_boundary(char *dna)
+{
+	int i;
+	const char *target_strings[2] = { "CAGG", "TAGG" };
+	for (i = 0; i < num_strings(target_strings); i++) {
+		if (strstr(dna, target_strings[i]) != NULL) {
+			return 1;
+		}
+	}
+	return 0;
+}
+
+int exon_intron_feature_boundary(char *dna)
+{
+	int i;
+	const char *target_strings[4] =
+	    { "AAGGTAAGT", "AAGGTGAGT", "CAGGTAAGT", "CAGGTGAGT" };
+	for (i = 0; i < num_strings(target_strings); i++) {
+		if (strstr(dna, target_strings[i]) != NULL) {
+			return 1;
+		}
+	}
+	return 0;
+}
+
+int has_stop_codon(char *dna)
+{
+	int i;
+	for (i = 0; i < num_strings(stop_codon_strings); i++) {
+		if (strstr(dna, stop_codon_strings[i]) != NULL) {
+			return 1;
+		}
+	}
+	return 0;
+}
 
 void
 data_callback(unsigned int num_total, unsigned int num_input,
 	      unsigned int num_output, fann_type * inputs, fann_type * outputs)
 {
 	char line[512];
-	int i;
+	int i, j;
 	char *strval;
 	char *delim = ",";
 
@@ -24,7 +63,7 @@ data_callback(unsigned int num_total, unsigned int num_input,
 	strval = strtok(line, delim);
 	for (i = 0; i < 3; i++) {
 		outputs[i] =
-		    !memcmp(slice_class_str[i], strval, strlen(strval));
+		    !memcmp(slice_class_strings[i], strval, strlen(strval));
 	}
 	/* Skip the sequence identifier */
 	strval = strtok(NULL, delim);
@@ -34,11 +73,23 @@ data_callback(unsigned int num_total, unsigned int num_input,
 	while (isspace((unsigned char)*strval))
 		strval++;
 
-	for (i = 0; i < num_input; i++) {
-		char *p = strchr(nucleotides, strval[i]);
+	i = 0;
+	inputs[i++] = exon_intron_feature_boundary(strval);
+	inputs[i++] = intron_exon_feature_boundary(strval);
+	inputs[i++] = has_stop_codon(strval);
+
+	for (j = 0; j < 60; j++) {
+		char *p = strchr(nucleotides, strval[j]);
 		assert(p != NULL);
-		inputs[i] = (fann_type) (p - nucleotides);
+		inputs[i++] = (fann_type) (p - nucleotides);
 	}
+
+	/*
+	   printf(".... ");
+	   for (i = 0; i < num_input; i++) {
+	   printf("%3.0f ", inputs[i]);
+	   }
+	   printf(" ...\n"); */
 }
 
 int max_probability_index(fann_type * data)

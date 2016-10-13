@@ -4,6 +4,10 @@
 #include <stdio.h>
 #include <fann.h>
 
+#define NUM_INPUTS 63
+#define NUM_OUTPUTS 3
+#define NUM_TEST_RECORDS 638
+
 // This global is unfortunate and necessary since it can't be passed to the callback */
 extern FILE *datafile;
 

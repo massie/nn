@@ -4,21 +4,20 @@
 
 int main(int argc, char *argv[])
 {
-	const unsigned int num_input = 60;
-	const unsigned int num_output = 3;
+	const unsigned int num_neurons_hidden =
+	    NUM_INPUTS * 2 / 3 + NUM_OUTPUTS;
 	const unsigned int num_layers = 3;
-	const unsigned int num_neurons_hidden = num_input * 2 / 3 + num_output;
 	const float desired_error = 0.001f;
 	const unsigned int max_epochs = 100000;
 
 	struct fann *ann =
-	    fann_create_standard(num_layers, num_input, num_neurons_hidden,
-				 num_output);
+	    fann_create_standard(num_layers, NUM_INPUTS, num_neurons_hidden,
+				 NUM_OUTPUTS);
 	fann_set_training_algorithm(ann, FANN_TRAIN_QUICKPROP);
 
 	datafile = fopen("data/splice.train", "r");
 	struct fann_train_data *train_data =
-	    fann_create_train_from_callback(1914, num_input, num_output,
+	    fann_create_train_from_callback(1914, NUM_INPUTS, NUM_OUTPUTS,
 					    data_callback);
 	fclose(datafile);
 
@@ -26,7 +25,7 @@ int main(int argc, char *argv[])
 
 	datafile = fopen("data/splice.cv", "r");
 	struct fann_train_data *cv_data =
-	    fann_create_train_from_callback(638, num_input, num_output,
+	    fann_create_train_from_callback(638, NUM_INPUTS, NUM_OUTPUTS,
 					    data_callback);
 	fclose(datafile);
 
