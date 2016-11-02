@@ -1,0 +1,8 @@
+CMakeCache.txt
+CMakeFiles/*
+Makefile
+cmake_install.cmake
+*.swp
+*.net
+train_cv_data
+test_data
