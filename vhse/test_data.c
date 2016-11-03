@@ -2,11 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <ctype.h>
 #include "fann.h"
 
 struct vhse_info {
 	char *aa_short_name;
-	double vhse_scores[8];
+	float vhse_scores[8];
 };
 
 struct vhse_info vhse[] = {
@@ -38,43 +39,53 @@ struct vhse_info vhse[] = {
 	{.aa_short_name = NULL}
 };
 
-int str_to_vhse(char *str, int strlen, double *values, int vallen) {
-	int i;
-	int offset;
-	for (i = 0; i < strlen; i++) {
+void str_to_vhse(char *str, int slen, float *values, int vallen) {
+	int i, j;
+	for (i = 0, j = 0; i < slen; i++) {
 		char p = str[i];
-		if (p >= 97) {
-			p -= 32;
+		if (isspace(p)) {
+			continue;
 		}
-		offset = p - 65;
-		struct vhse_info *info = vhse + offset;
-		printf("%f,%f,%f\n", info->vhse_scores[0], info->vhse_scores[2], info->vhse_scores[4]);
+		struct vhse_info *info;
+		assert(p >= 'A' & p <= 'z');
+		if (p >= 'A') {
+			info = vhse + p - 'A';
+		} else {
+			info = vhse + p - 'a';
+		}
+		values[j++] = info->vhse_scores[0];
+		values[j++] = info->vhse_scores[1];
+		values[j++] = info->vhse_scores[2];
 	}
 }
 
 int main()
 {
-	fann_type *calc_out;
-	struct fann_train_data *data;
-	int i;
 	struct fann *ann = fann_create_from_file("proteasomal_cleavage.net");
 
-	double answer[4 * 3];
-	str_to_vhse("ARND", 4, answer, sizeof(answer));
+	char *line = NULL;
+	size_t size;
+	int expected_line_length = 28;
+	int values_len = expected_line_length * 3;
+	float values[values_len]; 
 
-	/*
-	data = fann_read_train_from_file("/workspace/notebooks/data/epitope_protein/s6_fann.txt");
-	fann_scale_train_data(data, 0, 1);
+	while(getline(&line, &size, stdin) != -1) {
 
-	fann_reset_MSE(ann);
-	for (i = 0; i < data->num_data; i++) {
-		calc_out = fann_test(ann, data->input[i], data->output[i]);
-		printf("Test actual=%f calculated=%f\n", data->output[i][0], calc_out[0]);
+		str_to_vhse(line, strlen(line), values, values_len);
+#ifdef ECHO_INPUT
+		printf(">");
+		for (i = 0; i < values_len; i++) {
+			if (i) {
+				printf(",");
+			}
+			printf("%f", values[i]);
+		}
+		printf("\n");
+#endif
+		fann_scale_input(ann, values);
+		fann_type *output = fann_run(ann, values);
+		printf("%f\n", output[0]);
 	}
-	printf("MSE: %f\n", fann_get_MSE(ann));
-
-	fann_destroy_train(data);
-	*/
 	fann_destroy(ann);
 	return 0;
 }
